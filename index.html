@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArtVint PRO – Marketplace Autorskiej Sztuki z AI-Shield</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#FAF8F5] text-stone-900 min-h-screen flex flex-col">
+
+  <!-- Powiadomienia Toast -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
+
+  <!-- Górny pasek nawigacji -->
+  <header class="glass-nav border-b border-stone-200/80 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-4">
+
+      <div class="flex items-center gap-3 cursor-pointer" onclick="setViewMode('all')">
+        <div class="bg-gradient-to-br from-teal-700 to-emerald-900 text-white font-serif-art font-bold text-2xl px-3.5 py-1 rounded-xl shadow-sm">
+          ArtVint
+        </div>
+        <div class="hidden sm:block">
+          <span class="text-xs font-bold uppercase tracking-widest text-teal-800 block">100% Handmade & Fine Art</span>
+          <span class="text-[11px] text-stone-500">System weryfikacji AI-Shield™ • 0% prowizji</span>
+        </div>
+      </div>
+
+      <div class="flex-1 max-w-md relative">
+        <input type="text" id="search-input" oninput="renderItems()"
+          placeholder="Szukaj obrazu, techniki, wymiaru lub artysty..."
+          class="w-full bg-stone-100/90 border border-stone-300/80 rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-teal-700 focus:bg-white transition">
+        <span class="absolute left-3.5 top-2.5 text-stone-400 text-sm">🔍</span>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <button onclick="setViewMode('favorites')" class="px-3 py-2 rounded-full text-xs font-semibold border border-stone-200 bg-white hover:bg-stone-100 transition flex items-center gap-1.5">
+          <span>❤️</span> <span class="hidden md:inline">Ulubione</span> <span id="fav-count" class="bg-rose-100 text-rose-700 px-1.5 py-0.2 rounded-full text-[10px]">0</span>
+        </button>
+
+        <button onclick="handleSellClick()" class="bg-teal-700 hover:bg-teal-800 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-full transition shadow-sm flex items-center gap-1.5">
+          <span>+</span> <span>Wystaw dzieło</span>
+        </button>
+
+        <div id="user-nav-area"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="bg-gradient-to-r from-stone-900 via-teal-950 to-stone-900 text-white relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 py-8 md:py-10 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
+      <div class="max-w-xl space-y-2 text-center md:text-left">
+        <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-semibold px-3 py-1 rounded-full">
+          <span>🛡️ Chronione skanerem anty-AI (ArtVint AI-Shield™)</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-serif-art font-bold leading-tight">
+          Prawdziwa sztuka prosto z pracowni. Zero wydruków AI.
+        </h1>
+        <p class="text-stone-300 text-xs sm:text-sm leading-relaxed">
+          Każde zdjęcie przed publikacją przechodzi weryfikację metadanych i struktury obrazu. Kupuj od ręki, negocjuj ceny jak na Vinted lub zamawiaj prace indywidualne.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 text-center shrink-0">
+        <div class="bg-white/5 backdrop-blur border border-white/10 p-3.5 rounded-2xl">
+          <div class="text-xl font-bold text-teal-300">0%</div>
+          <div class="text-[11px] text-stone-300">Prowizji od artysty</div>
+        </div>
+        <div class="bg-white/5 backdrop-blur border border-white/10 p-3.5 rounded-2xl">
+          <div class="text-xl font-bold text-emerald-300">AI-Shield</div>
+          <div class="text-[11px] text-stone-300">Detekcja przed publikacją</div>
+        </div>
+        <div class="bg-white/5 backdrop-blur border border-white/10 p-3.5 rounded-2xl">
+          <div class="text-xl font-bold text-amber-300">3 tryby</div>
+          <div class="text-[11px] text-stone-300">Kup / Negocjuj / Custom</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Główna zawartość -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+
+    <!-- Pasek Kategorii -->
+    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none" id="category-bar"></div>
+
+    <!-- Zaawansowany Panel Filtrów -->
+    <section class="bg-white p-4 rounded-2xl border border-stone-200/90 shadow-sm space-y-4">
+      <div class="flex flex-wrap justify-between items-center gap-2 border-b border-stone-100 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-bold text-stone-800">🎛️ Zaawansowane filtry oferty</span>
+          <span id="results-counter" class="text-xs bg-stone-100 text-stone-600 px-2.5 py-0.5 rounded-full font-medium"></span>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="setViewMode('all')" id="view-all-btn" class="text-xs font-semibold px-3 py-1 rounded-lg bg-stone-900 text-white">Wszystkie prace</button>
+          <button onclick="setViewMode('my')" id="view-my-btn" class="text-xs font-semibold px-3 py-1 rounded-lg bg-stone-100 text-stone-700 hover:bg-stone-200">🎨 Moja pracownia</button>
+          <button onclick="resetFilters()" class="text-xs text-teal-700 hover:underline font-medium ml-2">Wyczyść filtry</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+        <div class="space-y-1">
+          <label class="font-semibold text-stone-600 block">Przedział cenowy (PLN)</label>
+          <div class="flex items-center gap-1.5">
+            <input type="number" id="filter-min-price" oninput="renderItems()" placeholder="Od zł" min="0" class="w-full bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-2 focus:outline-none focus:border-teal-600">
+            <span class="text-stone-400">–</span>
+            <input type="number" id="filter-max-price" oninput="renderItems()" placeholder="Do zł" min="0" class="w-full bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-2 focus:outline-none focus:border-teal-600">
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-semibold text-stone-600 block">Opcje zakupu i sprzedaży</label>
+          <select id="filter-sale-type" onchange="renderItems()" class="w-full bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-2 focus:outline-none focus:border-teal-600">
+            <option value="all">Wszystkie formy sprzedaży</option>
+            <option value="negotiable">💬 Możliwa negocjacja ceny</option>
+            <option value="custom">✨ Na zamówienie (Personalizacja)</option>
+            <option value="buynow">⚡ Tylko Kup Teraz</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-semibold text-stone-600 block">Wykończenie i cechy</label>
+          <select id="filter-feature" onchange="renderItems()" class="w-full bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-2 focus:outline-none focus:border-teal-600">
+            <option value="all">Dowolne wykończenie</option>
+            <option value="framed">🖼️ Oprawione / Gotowe na ścianę</option>
+            <option value="unique">💎 Unikat 1/1 (Pojedynczy egzemplarz)</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-semibold text-stone-600 block">Dostępność</label>
+          <select id="filter-availability" onchange="renderItems()" class="w-full bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-2 focus:outline-none focus:border-teal-600">
+            <option value="available">Tylko dostępne w sprzedaży</option>
+            <option value="all">Pokaż również sprzedane (Archiwum)</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-semibold text-stone-600 block">Sortuj według</label>
+          <select id="filter-sort" onchange="renderItems()" class="w-full bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-2 focus:outline-none focus:border-teal-600">
+            <option value="popular">🔥 Najpopularniejsze (Polubienia)</option>
+            <option value="newest">🆕 Najnowsze ogłoszenia</option>
+            <option value="price-asc">💰 Cena: od najniższej</option>
+            <option value="price-desc">💎 Cena: od najwyższej</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Siatka Ogłoszeń -->
+    <section id="items-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></section>
+  </main>
+
+  <!-- Ukryty canvas do analizy pikseli obrazu -->
+  <canvas id="ai-scanner-canvas" class="hidden"></canvas>
+
+  <!-- MODAL 1: Logowanie -->
+  <div id="login-modal" class="fixed inset-0 bg-stone-950/60 backdrop-blur-sm hidden items-center justify-center z-40 p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-stone-100">
+      <div class="flex justify-between items-center border-b pb-3">
+        <div>
+          <h2 class="text-xl font-serif-art font-bold text-stone-900">Witaj w ArtVint</h2>
+          <p class="text-xs text-stone-500">Zaloguj się jako twórca lub kolekcjoner</p>
+        </div>
+        <button onclick="closeModal('login-modal')" class="text-stone-400 hover:text-stone-700 text-2xl">&times;</button>
+      </div>
+
+      <div class="bg-teal-50/80 border border-teal-200 p-3 rounded-2xl space-y-2">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-teal-800 block">⚡ Szybkie logowanie (Do prezentacji MVP):</span>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="quickLogin('@marta_asp', 'Marta (Studentka ASP)', 'Artystka')" class="bg-white hover:bg-teal-600 hover:text-white text-stone-800 border border-teal-300 text-xs font-semibold py-2 px-2 rounded-xl transition">
+            👩‍🎨 Konto Artystki (@marta_asp)
+          </button>
+          <button onclick="quickLogin('@piotr_kolekcjoner', 'Piotr Nowak', 'Kupujący')" class="bg-white hover:bg-teal-600 hover:text-white text-stone-800 border border-teal-300 text-xs font-semibold py-2 px-2 rounded-xl transition">
+            🛍️ Konto Kupującego (@piotr)
+          </button>
+        </div>
+      </div>
+
+      <form id="login-form" class="space-y-3">
+        <div>
+          <label class="text-xs font-semibold text-stone-600 block mb-1">Twój nick lub e-mail</label>
+          <input type="text" id="login-username" placeholder="np. @jan_malarz" required class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm">
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-stone-600 block mb-1">Hasło</label>
+          <input type="password" id="login-pass" placeholder="••••••••" required class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm">
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-stone-600 block mb-1">Typ profilu</label>
+          <select id="login-role" class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm bg-white">
+            <option value="Twórca / Artysta">🎨 Twórca / Artysta (Sprzedaję i kupuję)</option>
+            <option value="Kolekcjoner">🛍️ Kolekcjoner (Tylko kupuję)</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-semibold py-3 rounded-xl text-sm transition">
+          Zaloguj się / Utwórz konto
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Wystawianie dzieła + SKANER ANTY-AI (AI-Shield) -->
+  <div id="add-modal" class="fixed inset-0 bg-stone-950/60 backdrop-blur-sm hidden items-center justify-center z-40 p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 space-y-4 shadow-2xl my-8">
+      <div class="flex justify-between items-center border-b pb-3">
+        <div>
+          <h2 class="text-xl font-serif-art font-bold">Wystaw dzieło na sprzedaż</h2>
+          <p class="text-xs text-stone-500">Każde zdjęcie przechodzi automatyczną weryfikację anty-AI przed publikacją.</p>
+        </div>
+        <button onclick="closeModal('add-modal')" class="text-stone-400 hover:text-stone-700 text-2xl">&times;</button>
+      </div>
+
+      <form id="add-form" class="space-y-3.5 text-sm">
+
+        <!-- SEKCJA AI-SHIELD SCANNER -->
+        <div class="bg-slate-900 text-white p-4 rounded-2xl space-y-3 border border-slate-700">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="bg-teal-500/20 border border-teal-400/40 text-teal-300 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                🛡️ ArtVint AI-Shield™
+              </span>
+              <span class="text-xs text-slate-300 font-semibold">Detektor grafik generowanych przez AI</span>
+            </div>
+            <span id="ai-score-badge" class="text-[11px] font-mono bg-slate-800 text-slate-400 px-2.5 py-0.5 rounded-full">
+              Oczekuje na plik...
+            </span>
+          </div>
+
+          <div>
+            <input type="file" id="art-image-file" accept="image/*" onchange="handleFileUpload(this)"
+              class="w-full text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-teal-600 file:text-white hover:file:bg-teal-500 cursor-pointer">
+          </div>
+
+          <!-- Przyciski do demonstracji na żywo podczas obrony projektu -->
+          <div class="pt-1 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+            <span class="text-[11px] text-slate-400">⚡ Demo na prezentację:</span>
+            <div class="flex gap-2">
+              <button type="button" onclick="runAiScanSimulation('human')" class="bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/40 text-emerald-200 text-[11px] font-semibold px-2.5 py-1 rounded-lg transition">
+                ✅ Symuluj zdjęcie z pracowni
+              </button>
+              <button type="button" onclick="runAiScanSimulation('ai')" class="bg-rose-600/30 hover:bg-rose-600/50 border border-rose-500/40 text-rose-200 text-[11px] font-semibold px-2.5 py-1 rounded-lg transition">
+                🚨 Symuluj grafikę z Midjourney (Blokada)
+              </button>
+            </div>
+          </div>
+
+          <div id="ai-scan-box" class="hidden space-y-2 pt-1">
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div id="ai-scan-bar" class="bg-teal-400 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <div id="ai-scan-status" class="text-xs font-mono text-slate-300">Inicjalizacja skanera...</div>
+          </div>
+        </div>
+
+        <!-- Dane dzieła -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label class="text-xs font-semibold text-stone-600 block mb-1">Tytuł dzieła</label>
+            <input type="text" id="art-title" placeholder="np. Studium światła #4" required class="w-full border border-stone-300 rounded-xl px-3 py-2">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-stone-600 block mb-1">Cena bazowa (PLN)</label>
+            <input type="number" id="art-price" placeholder="np. 350" required min="10" class="w-full border border-stone-300 rounded-xl px-3 py-2 font-bold text-teal-800">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="text-xs font-semibold text-stone-600 block mb-1">Kategoria</label>
+            <select id="art-category" class="w-full border border-stone-300 rounded-xl px-3 py-2 bg-white">
+              <option value="Malarstwo">🎨 Malarstwo</option>
+              <option value="Grafika i Linoryt">✒️ Grafika i Linoryt</option>
+              <option value="Ceramika i Szkło">🏺 Ceramika i Szkło</option>
+              <option value="Rzeźba i Drewno">🗿 Rzeźba i Drewno</option>
+              <option value="Fotografia Analogowa">📷 Fotografia Analogowa</option>
+              <option value="Tekstylia i Makrama">🧶 Tekstylia i Makrama</option>
+              <option value="Biżuteria Autorska">💍 Biżuteria Autorska</option>
+              <option value="Plakat i Ilustracja">🖼️ Plakat i Ilustracja</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-stone-600 block mb-1">Technika wykonania</label>
+            <input type="text" id="art-tech" placeholder="np. Olej na płótnie" required class="w-full border border-stone-300 rounded-xl px-3 py-2">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-stone-600 block mb-1">Wymiary</label>
+            <input type="text" id="art-dim" placeholder="np. 50 x 70 cm" required class="w-full border border-stone-300 rounded-xl px-3 py-2">
+          </div>
+        </div>
+
+        <!-- Opcje sprzedaży -->
+        <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 space-y-2">
+          <span class="text-xs font-bold text-stone-700 block">⚙️ Dostępne opcje sprzedaży dla kupującego:</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="opt-negotiable" checked class="accent-teal-700">
+              <span>💬 Zezwól na <strong>negocjację ceny</strong></span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="opt-custom" class="accent-teal-700">
+              <span>✨ Przyjmuję <strong>zamówienia Custom</strong></span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="opt-framed" checked class="accent-teal-700">
+              <span>🖼️ Praca oprawiona / gotowa</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="opt-unique" checked class="accent-teal-700">
+              <span>💎 Unikat 1/1 (Jedyny egzemplarz)</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-stone-600 block mb-1">Gabaryt bezpiecznej przesyłki</label>
+          <select id="art-shipping" class="w-full border border-stone-300 rounded-xl px-3 py-2 bg-white text-xs">
+            <option value="14">📦 Mały (Grafika/Biżuteria) – 14 zł</option>
+            <option value="19" selected>🛡️ Średni (Ceramika/Małe płótno) – 19 zł</option>
+            <option value="29">🚚 Duży Kurier Ostrożnie (Duży obraz/Rzeźba) – 29 zł</option>
+          </select>
+        </div>
+
+        <button type="submit" id="publish-btn" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-xl text-sm transition shadow">
+          Opublikuj w swojej pracowni (0% prowizji)
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Negocjacja ceny -->
+  <div id="negotiate-modal" class="fixed inset-0 bg-stone-950/60 backdrop-blur-sm hidden items-center justify-center z-40 p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h2 class="text-lg font-serif-art font-bold">💬 Zaproponuj swoją cenę</h2>
+        <button onclick="closeModal('negotiate-modal')" class="text-stone-400 hover:text-stone-700 text-2xl">&times;</button>
+      </div>
+      <div id="negotiate-info" class="text-sm space-y-3"></div>
+      <div class="space-y-2">
+        <label class="text-xs font-semibold text-stone-600 block">Twoja propozycja dla artysty (PLN):</label>
+        <input type="number" id="offer-price-input" class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-lg font-bold text-teal-800">
+        <p class="text-[11px] text-stone-500">Wskazówka: Artyści najczęściej akceptują oferty obniżone o maksymalnie 15–20%.</p>
+      </div>
+      <button onclick="submitOffer()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-semibold py-3 rounded-xl text-sm transition">
+        Wyślij ofertę cenową
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Podsumowanie zakupu -->
+  <div id="buy-modal" class="fixed inset-0 bg-stone-950/60 backdrop-blur-sm hidden items-center justify-center z-40 p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h2 class="text-lg font-serif-art font-bold">🛡️ Bezpieczny zakup (ArtVint Pay)</h2>
+        <button onclick="closeModal('buy-modal')" class="text-stone-400 hover:text-stone-700 text-2xl">&times;</button>
+      </div>
+      <div id="buy-details" class="space-y-3 text-sm"></div>
+      <button onclick="confirmPurchase()" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-xl text-sm transition shadow">
+        Opłać zamówienie i wygeneruj etykietę
+      </button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
