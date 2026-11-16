@@ -1,0 +1,1 @@
+{"name":"artvint","version":"1.0.0","private":true,"type":"module","engines":{"node":">=22.13"},"scripts":{"start":"node --env-file-if-exists=.env server.mjs","test":"node --test","mail:check":"node --env-file-if-exists=.env server.mjs --check-mail"},"dependencies":{"fast-xml-parser":"^5.12.1","nodemailer":"^10.6.0"}}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aktywacja konta · ArtVint</title>
+  <style>
+    body { margin: 0; padding: 2rem 1rem; background: #f9f8f6; color: #1c1917; font: 1rem/1.5 system-ui, sans-serif }
+    main { max-width: 28rem; margin: 3rem auto; padding: 1.5rem; border: 1px solid #e7e5e4; border-radius: 1rem; background: white }
+    h1 { margin-top: 0; font-size: 1.6rem }
+    a { color: #115e59; font-weight: 600 }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Aktywacja konta</h1>
+    <p id="activation-status" role="status">Potwierdzamy adres e-mail…</p>
+    <a href="/">Wróć do ArtVint</a>
+  </main>
+  <script>
+    const token = new URLSearchParams(location.hash.slice(1)).get('token');
+    const status = document.getElementById('activation-status');
+    if (location.hash) history.replaceState(null, '', location.pathname);
+
+    async function activate() {
+      if (!/^[a-f0-9]{64}$/.test(token || '')) {
+        status.textContent = 'Otwórz link aktywacyjny z wiadomości od ArtVint.';
+        return;
+      }
+      try {
+        const response = await fetch('/api/accounts/activate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Nie udało się aktywować konta.');
+        status.textContent = 'Adres e-mail potwierdzony. Możesz się zalogować.';
+      } catch (error) {
+        status.textContent = error.message;
+      }
+    }
+    activate();
+  </script>
+</body>
+</html>
