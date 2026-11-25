@@ -26,6 +26,8 @@ Aby link resetujący działał na urządzeniach użytkowników, ustaw adres udos
 
 Katalog, pracownie, zamówienia i opinie zaczynają od pustych list. W oknie logowania dostępne są trzy zwykłe konta testowe i konto administratora testowego. Sesje i czat kont testowych korzystają z osobnej bazy w pamięci. Zwykłe konta nie pojawiają się w panelu administratora testowego.
 
+Katalog i portfolio można przeglądać bez logowania. Zakup, ulubione i zapytania Custom wymagają konta. Po wylogowaniu katalog zachowuje ostatnio przeglądany zestaw prac (także po odświeżeniu strony), bez łączenia danych zwykłych kont i kont testowych. Oferty nadal zapisują się lokalnie w danej przeglądarce, a nowa przeglądarka bez opublikowanych prac zaczyna od pustego katalogu.
+
 ## Automaty i punkty odbioru
 
 Koszyk pobiera rzeczywiste punkty przez backend. InPost udostępnia Paczkomaty, ORLEN Paczka udostępnia automaty, a DPD Pickup udostępnia automaty i punkty stacjonarne z polskiego katalogu MyPudo. Wyszukiwarka dopasowuje fragmenty kodu, miejscowości, ulicy i kodu pocztowego, ignorując wielkość liter oraz polskie znaki.
