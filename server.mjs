@@ -18,9 +18,9 @@ const reservedHandles = new Set([
   '@dluto_studio', '@alchemia_srebra', '@klisza_35mm', '@sploty_natury'
 ]);
 const demoAccounts = [
-  ['@piotr_kolekcjoner', 'Konto testowe 1', 'Użytkownik'],
-  ['@marta_asp', 'Konto testowe 2', 'Użytkownik'],
-  ['@glina_w_ogniu', 'Konto testowe 3', 'Użytkownik'],
+  ['@piotr_kolekcjoner', 'Piotr Wiśniewski', 'Użytkownik'],
+  ['@marta_asp', 'Marta Kowalska', 'Użytkownik'],
+  ['@glina_w_ogniu', 'Anna Nowak · Glina w Ogniu', 'Użytkownik'],
   ['@admin', 'Administrator testowy', 'Administrator']
 ];
 const validPassword = value => typeof value === 'string' && value.length >= 8 &&
@@ -34,6 +34,7 @@ const staticFiles = new Map([
   ['/reset-password', ['reset-password.html', 'text/html; charset=utf-8']],
   ['/activate-account', ['activate-account.html', 'text/html; charset=utf-8']],
   ['/style.css', ['style.css', 'text/css; charset=utf-8']],
+  ['/demo-data.js', ['demo-data.js', 'text/javascript; charset=utf-8']],
   ['/artist-avatar.svg', ['artist-avatar.svg', 'image/svg+xml']]
 ]);
 const inPostPointsUrl = 'https://api-pl-points.easypack24.net/v1/points';

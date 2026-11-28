@@ -152,6 +152,9 @@
   <!-- GŁÓWNA ZAWARTOŚĆ -->
   <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-5">
 
+    <div id="demo-data-notice" class="hidden rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-950" role="note">
+      <strong>Dane demonstracyjne.</strong> Przykładowe pracownie, oferty, opinie i zakupy są fikcyjne. Zdjęcia z Unsplash służą wyłącznie jako ilustracje. W oknie logowania wybierz Piotra, Martę, pracownię Glina w Ogniu lub Administratora.
+    </div>
     <nav id="workspace-nav" aria-label="Widoki ArtVint"></nav>
 
     <!-- Pasek Kategorii -->
@@ -272,8 +275,8 @@
         <div class="font-bold text-stone-900 uppercase tracking-wider text-[11px]">Narzędzia prezentacyjne DEMO</div>
         <p class="text-stone-500 text-[11px]">Wszystkie dodane obrazy, edycje portfolio, zamówienia i wiadomości zapisują się lokalnie.</p>
         <div class="flex flex-wrap gap-2 pt-1">
-          <button onclick="resetDemoData()" class="bg-stone-100 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 text-stone-700 border border-stone-300 px-3 py-1.5 rounded-xl font-semibold transition">
-            <i class="fa-solid fa-rotate-right mr-1"></i>Przywróć dane początkowe
+          <button id="reset-demo-data-btn" onclick="resetDemoData()" class="bg-stone-100 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 text-stone-700 border border-stone-300 px-3 py-1.5 rounded-xl font-semibold transition">
+            <i class="fa-solid fa-rotate-right mr-1"></i>Przywróć przykładowe dane
           </button>
           <button id="export-data-btn" onclick="exportDatabaseJSON()" class="bg-stone-100 hover:bg-teal-50 hover:text-teal-800 hover:border-teal-200 text-stone-700 border border-stone-300 px-3 py-1.5 rounded-xl font-semibold transition">
             <i class="fa-solid fa-download mr-1"></i>Eksportuj bazę (JSON)
@@ -310,9 +313,9 @@
       <div id="demo-login-options" class="hidden rounded-2xl border border-teal-200 bg-teal-50 p-3">
         <p class="mb-2 text-xs font-bold text-teal-900">Konta testowe</p>
         <div class="grid grid-cols-2 gap-2">
-          <button type="button" data-demo-handle="@piotr_kolekcjoner" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Konto testowe 1</button>
-          <button type="button" data-demo-handle="@marta_asp" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Konto testowe 2</button>
-          <button type="button" data-demo-handle="@glina_w_ogniu" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Konto testowe 3</button>
+          <button type="button" data-demo-handle="@piotr_kolekcjoner" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Piotr · kolekcjoner i fotograf</button>
+          <button type="button" data-demo-handle="@marta_asp" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Marta · malarstwo i grafika</button>
+          <button type="button" data-demo-handle="@glina_w_ogniu" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Glina w Ogniu · ceramika</button>
           <button type="button" data-demo-handle="@admin" onclick="signInDemo(this)" class="rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs font-semibold">Administrator</button>
         </div>
       </div>
@@ -772,6 +775,7 @@
     </div>
   </div>
 
+  <script src="demo-data.js"></script>
   <script>
     /* ============================================================================
        1. SYSTEM ANTY-ZACIĘCIOWY (WATCHDOG BŁĘDÓW I BEZPIECZNY ZAPIS LOCALSTORAGE)
@@ -816,6 +820,9 @@
       { id: "Plakat i Ilustracja", label: "Plakat i Ilustracja", icon: "fa-image" }
     ];
 
+    try { ArtVintDemo.seed(localStorage); }
+    catch { console.warn("Nie udało się zapisać danych demonstracyjnych w tej przeglądarce."); }
+
     const initialArtistProfiles = {};
     const initialArtworks = [];
     const initialReviews = [];
@@ -827,10 +834,9 @@
     function initialCatalogDemoMode() {
       try {
         const preferred = localStorage.getItem("artvint_catalog_scope");
-        if (preferred) return preferred === "demo";
         const regular = JSON.parse(localStorage.getItem("artvint_clean_artvint_v6_items") || "[]");
         const demo = JSON.parse(localStorage.getItem("artvint_demo_clean_artvint_v6_items") || "[]");
-        return !regular.length && demo.length > 0;
+        return (preferred === "demo" || !regular.length) && demo.length > 0;
       } catch {
         return false;
       }
@@ -897,12 +903,9 @@
       return result;
     }
 
-    function useServerUser(user, demo = false) {
-      resetServerChat();
-      serverDemoMode = Boolean(user && demo);
-      const nextCatalogDemoMode = user ? serverDemoMode : catalogDemoMode;
-      if (catalogDemoMode !== nextCatalogDemoMode) {
-        catalogDemoMode = nextCatalogDemoMode;
+    function selectCatalogScope(demo) {
+      if (catalogDemoMode !== demo) {
+        catalogDemoMode = demo;
         artworks = safeLoadStorage("artvint_v6_items", initialArtworks);
         artistProfiles = safeLoadStorage("artvint_v6_artists", initialArtistProfiles);
         orders = safeLoadStorage("artvint_v6_orders", initialOrders);
@@ -912,6 +915,12 @@
         deletedAccounts = safeLoadStorage("artvint_deleted_accounts", []);
         blockedEmails = safeLoadStorage("artvint_blocked_emails", []);
       }
+    }
+
+    function useServerUser(user, demo = false) {
+      resetServerChat();
+      serverDemoMode = Boolean(user && demo);
+      selectCatalogScope(user ? serverDemoMode : catalogDemoMode);
       currentUser = user;
       if (user && deletedAccounts.includes(user.handle)) {
         detachAccountHistory(user.handle);
@@ -1229,26 +1238,22 @@
     }
 
     function resetDemoData() {
-      localStorage.removeItem(storageKey("artvint_v6_items"));
-      localStorage.removeItem(storageKey("artvint_v6_artists"));
-      localStorage.removeItem(storageKey("artvint_v6_user"));
-      localStorage.removeItem(storageKey("artvint_v6_orders"));
-      localStorage.removeItem(storageKey("artvint_v6_chats"));
-      localStorage.removeItem(storageKey("artvint_v6_reviews"));
-      artworks = JSON.parse(JSON.stringify(initialArtworks));
-      artistProfiles = JSON.parse(JSON.stringify(initialArtistProfiles));
-      currentUser = null;
-      accounts = {};
-      deletedAccounts = [];
-      blockedEmails = [];
-      orders = JSON.parse(JSON.stringify(initialOrders));
-      chats = JSON.parse(JSON.stringify(initialChats));
-      reviews = JSON.parse(JSON.stringify(initialReviews));
-      restoreLocalAccount();
+      if (!catalogDemoMode) return showToast("Przykładowe dane są dostępne tylko w trybie demonstracyjnym.", "info");
+      try {
+        ArtVintDemo.seed(localStorage, { force: true });
+        artworks = safeLoadStorage("artvint_v6_items", []);
+        artistProfiles = safeLoadStorage("artvint_v6_artists", {});
+        orders = safeLoadStorage("artvint_v6_orders", []);
+        reviews = safeLoadStorage("artvint_v6_reviews", []);
+      } catch {
+        return showToast("Nie udało się przywrócić przykładów. Sprawdź miejsce w pamięci przeglądarki.", "error");
+      }
+      activeItemId = null;
       document.getElementById("error-watchdog-banner").classList.add("hidden");
+      resetFilters();
       switchTab("all");
       saveState();
-      showToast("Przywrócono domyślne dane demonstracyjne i oczyszczono pamięć!");
+      showToast("Przywrócono przykładowe prace, portfolio, zakupy i opinie. Zwykłe konta zachowały swoje dane.");
     }
 
     function showToast(msg, type = "success") {
@@ -1305,6 +1310,8 @@
     }
 
     function renderUserNav() {
+      document.getElementById("demo-data-notice").classList.toggle("hidden", !catalogDemoMode);
+      document.getElementById("reset-demo-data-btn").classList.toggle("hidden", !catalogDemoMode);
       renderWorkspaceNav();
       document.getElementById("export-data-btn").hidden = !isAdmin();
       const area = document.getElementById("user-nav-area");
@@ -1502,6 +1509,7 @@
       if (["@admin", "@marta_asp", "@glina_w_ogniu", demoBuyer].includes(handle)) {
         return showToast("Ten nick jest zarezerwowany. Wybierz inny.", "error");
       }
+      selectCatalogScope(false);
       const existing = accounts[handle];
       const address = email || existing?.email || "";
       if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {

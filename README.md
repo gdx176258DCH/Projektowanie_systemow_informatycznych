@@ -22,11 +22,28 @@ Alternatywnie ustaw `ART_VINT_SMTP_URL` oraz `ART_VINT_MAIL_FROM` zgodnie z dany
 
 Aby link resetujący działał na urządzeniach użytkowników, ustaw adres udostępnionej strony w `ART_VINT_ORIGIN`. Przy publikacji za proxy HTTPS ustaw `ART_VINT_ORIGIN` na publiczny adres strony bez końcowego ukośnika.
 
-## Konta testowe i pusty katalog
+## Dane demonstracyjne
 
-Katalog, pracownie, zamówienia i opinie zaczynają od pustych list. W oknie logowania dostępne są trzy zwykłe konta testowe i konto administratora testowego. Sesje i czat kont testowych korzystają z osobnej bazy w pamięci. Zwykłe konta nie pojawiają się w panelu administratora testowego.
+Po pierwszym otwarciu strony gość widzi 12 przykładowych dzieł (9 dostępnych i 3 sprzedane), 3 portfolio, 3 zamówienia i 2 opinie. Dane są fikcyjne i oznaczone banerem. Zestaw znajduje się w `demo-data.js` i zapisuje się wyłącznie pod kluczami `artvint_demo_clean_*` w localStorage. Nie tworzy zwykłych kont ani sesji.
 
-Katalog i portfolio można przeglądać bez logowania. Zakup, ulubione i zapytania Custom wymagają konta. Po wylogowaniu katalog zachowuje ostatnio przeglądany zestaw prac (także po odświeżeniu strony), bez łączenia danych zwykłych kont i kont testowych. Oferty nadal zapisują się lokalnie w danej przeglądarce, a nowa przeglądarka bez opublikowanych prac zaczyna od pustego katalogu.
+Kliknij **Zaloguj się** i wybierz konto testowe, bez wpisywania hasła:
+
+| Konto | Co pokazać |
+| --- | --- |
+| Piotr (`@piotr_kolekcjoner`) | Ulubione prace, 2 zakupy, certyfikat i zakup czekający na opinię, własne portfolio fotografii |
+| Marta (`@marta_asp`) | Portfolio malarstwa i grafiki, wystawianie i edycja, sprzedaż, zakup bez certyfikatu |
+| Glina w Ogniu (`@glina_w_ogniu`) | Ceramika, zamówienia Custom, sprzedana praca i przykłady do moderacji |
+| Administrator (`@admin`) | Konta testowe, wszystkie zamówienia, analiza i zatwierdzanie prac |
+
+Przykłady obejmują prace zatwierdzone, niezweryfikowane, oczekujące na decyzję oraz zdjęcie o wymiarach 80 × 80 px, które nie przechodzi analizy jakościowej. Certyfikaty i transakcje w tym zestawie służą wyłącznie demonstracji.
+
+Dane wczytują się jednorazowo. Pierwsza inicjalizacja zachowuje istniejące przykładowe prace i zmiany użytkownika, a kolejne otwarcia nie przywracają usuniętych ofert. Przycisk **Przywróć przykładowe dane** odtwarza katalog, portfolio, zamówienia i opinie w trybie demonstracyjnym. Nie usuwa kont ani danych zwykłych użytkowników. Usunięte konta testowe wymagają ponownego uruchomienia backendu.
+
+Zwykłe konta zachowują osobny, początkowo pusty katalog. Katalog i portfolio można przeglądać bez logowania. Zakup, ulubione i zapytania Custom wymagają konta. Po wylogowaniu katalog zachowuje ostatnio przeglądany zestaw prac również po odświeżeniu strony. Oferty nadal zapisują się lokalnie w przeglądarce.
+
+### Zdjęcia poglądowe
+
+Zestaw korzysta z adresów zdjęć Unsplash używanych wcześniej w prototypie (`script.js`): `photo-1565193566173-7a0ee3dbe261`, `photo-1582555172866-f73bb12a2ab3`, `photo-1544967082-d9d25d867d66`, `photo-1507525428034-b723cf961d3e`, `photo-1513519245088-0e12902e5a38` i `photo-1578301978693-85fa9c0320b9`. Obrazy nie przedstawiają prac fikcyjnych kont. Pełne adresy znajdują się przy rekordach w `demo-data.js`. Wczytanie zdjęć wymaga internetu.
 
 ## Automaty i punkty odbioru
 
