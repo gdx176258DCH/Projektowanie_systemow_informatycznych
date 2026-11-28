@@ -152,6 +152,9 @@
   <!-- GŁÓWNA ZAWARTOŚĆ -->
   <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-5">
 
+    <div id="demo-data-notice" class="hidden rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-950" role="note">
+      <strong>Dane demonstracyjne.</strong> Przykładowe pracownie, oferty, opinie i zakupy są fikcyjne. Zdjęcia z Unsplash służą wyłącznie jako ilustracje. W oknie logowania wybierz Piotra, Martę, pracownię Glina w Ogniu lub Administratora.
+    </div>
     <nav id="workspace-nav" aria-label="Widoki ArtVint"></nav>
 
     <!-- Pasek Kategorii -->
@@ -199,7 +202,8 @@
           <label class="font-semibold text-stone-600 block">Wykończenie i cechy</label>
           <select id="filter-feature" onchange="renderItems()" class="w-full bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-2 focus:outline-none focus:border-teal-600">
             <option value="all">Dowolne wykończenie</option>
-            <option value="framed">Oprawione / Gotowe na ścianę</option>
+            <option value="framed">Gotowe do ekspozycji</option>
+            <option value="unframed">Bez oprawy</option>
             <option value="unique">Unikat 1/1 (Pojedynczy egzemplarz)</option>
           </select>
         </div>
@@ -271,8 +275,8 @@
         <div class="font-bold text-stone-900 uppercase tracking-wider text-[11px]">Narzędzia prezentacyjne DEMO</div>
         <p class="text-stone-500 text-[11px]">Wszystkie dodane obrazy, edycje portfolio, zamówienia i wiadomości zapisują się lokalnie.</p>
         <div class="flex flex-wrap gap-2 pt-1">
-          <button onclick="resetDemoData()" class="bg-stone-100 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 text-stone-700 border border-stone-300 px-3 py-1.5 rounded-xl font-semibold transition">
-            <i class="fa-solid fa-rotate-right mr-1"></i>Przywróć dane początkowe
+          <button id="reset-demo-data-btn" onclick="resetDemoData()" class="bg-stone-100 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 text-stone-700 border border-stone-300 px-3 py-1.5 rounded-xl font-semibold transition">
+            <i class="fa-solid fa-rotate-right mr-1"></i>Przywróć przykładowe dane
           </button>
           <button id="export-data-btn" onclick="exportDatabaseJSON()" class="bg-stone-100 hover:bg-teal-50 hover:text-teal-800 hover:border-teal-200 text-stone-700 border border-stone-300 px-3 py-1.5 rounded-xl font-semibold transition">
             <i class="fa-solid fa-download mr-1"></i>Eksportuj bazę (JSON)
@@ -290,7 +294,7 @@
   <!-- MODAL 1: SZCZEGÓŁY DZIEŁA + WIZUALIZATOR NA ŚCIANIE (BEZ OPINII PRZED ZAKUPEM) -->
   <div id="detail-modal" class="fixed inset-0 bg-stone-950/60 backdrop-blur-sm hidden items-center justify-center z-40 p-4 overflow-y-auto">
     <div class="bg-white rounded-3xl max-w-4xl w-full p-6 md:p-8 shadow-2xl my-8 relative">
-      <button onclick="closeModal('detail-modal')" class="absolute top-5 right-6 text-stone-400 hover:text-stone-800 text-2xl z-10"><i class="fa-solid fa-xmark"></i></button>
+      <button onclick="closeModal('detail-modal')" aria-label="Zamknij podgląd dzieła" class="detail-close absolute top-5 right-6 text-stone-400 hover:text-stone-800 text-2xl z-10"><i class="fa-solid fa-xmark"></i></button>
       <div id="detail-modal-content"></div>
     </div>
   </div>
@@ -309,9 +313,9 @@
       <div id="demo-login-options" class="hidden rounded-2xl border border-teal-200 bg-teal-50 p-3">
         <p class="mb-2 text-xs font-bold text-teal-900">Konta testowe</p>
         <div class="grid grid-cols-2 gap-2">
-          <button type="button" data-demo-handle="@piotr_kolekcjoner" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Konto testowe 1</button>
-          <button type="button" data-demo-handle="@marta_asp" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Konto testowe 2</button>
-          <button type="button" data-demo-handle="@glina_w_ogniu" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Konto testowe 3</button>
+          <button type="button" data-demo-handle="@piotr_kolekcjoner" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Piotr · kolekcjoner i fotograf</button>
+          <button type="button" data-demo-handle="@marta_asp" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Marta · malarstwo i grafika</button>
+          <button type="button" data-demo-handle="@glina_w_ogniu" onclick="signInDemo(this)" class="rounded-lg border border-teal-200 bg-white p-2 text-xs font-semibold">Glina w Ogniu · ceramika</button>
           <button type="button" data-demo-handle="@admin" onclick="signInDemo(this)" class="rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs font-semibold">Administrator</button>
         </div>
       </div>
@@ -439,7 +443,7 @@
 
         <div>
           <label class="text-xs font-semibold text-stone-600 block mb-1">Opis dzieła dla kupujących</label>
-          <textarea id="art-desc" rows="3" required placeholder="Opisz inspirację, użyte materiały oraz sposób oprawy..." class="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs"></textarea>
+          <textarea id="art-desc" rows="3" required placeholder="Opisz inspirację, użyte materiały oraz wykończenie..." class="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs"></textarea>
         </div>
 
         <div class="bg-stone-50 p-3 rounded-2xl border border-stone-200 grid grid-cols-2 gap-2 text-xs">
@@ -451,9 +455,12 @@
             <input type="checkbox" id="opt-custom" class="accent-teal-700">
             <span>Możliwe zamówienie Custom</span>
           </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="opt-framed" checked class="accent-teal-700">
-            <span>Praca oprawiona / gotowa</span>
+          <label class="space-y-1">
+            <span class="block">Wykończenie</span>
+            <select id="opt-framed" class="w-full border border-stone-300 rounded-lg px-2 py-1.5 bg-white">
+              <option value="framed">Gotowe do ekspozycji</option>
+              <option value="unframed">Bez oprawy</option>
+            </select>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" id="opt-unique" checked class="accent-teal-700">
@@ -768,6 +775,7 @@
     </div>
   </div>
 
+  <script src="demo-data.js"></script>
   <script>
     /* ============================================================================
        1. SYSTEM ANTY-ZACIĘCIOWY (WATCHDOG BŁĘDÓW I BEZPIECZNY ZAPIS LOCALSTORAGE)
@@ -812,15 +820,31 @@
       { id: "Plakat i Ilustracja", label: "Plakat i Ilustracja", icon: "fa-image" }
     ];
 
+    try { ArtVintDemo.seed(localStorage); }
+    catch { console.warn("Nie udało się zapisać danych demonstracyjnych w tej przeglądarce."); }
+
     const initialArtistProfiles = {};
     const initialArtworks = [];
     const initialReviews = [];
     const initialOrders = [];
     const initialChats = {};
     let serverDemoMode = false;
+    // The catalog remains public when a demo session ends. Keep its data scope
+    // separate from authentication, without mixing demo and regular accounts.
+    function initialCatalogDemoMode() {
+      try {
+        const preferred = localStorage.getItem("artvint_catalog_scope");
+        const regular = JSON.parse(localStorage.getItem("artvint_clean_artvint_v6_items") || "[]");
+        const demo = JSON.parse(localStorage.getItem("artvint_demo_clean_artvint_v6_items") || "[]");
+        return (preferred === "demo" || !regular.length) && demo.length > 0;
+      } catch {
+        return false;
+      }
+    }
+    let catalogDemoMode = initialCatalogDemoMode();
 
     function storageKey(key) {
-      return (serverDemoMode ? "artvint_demo_clean_" : "artvint_clean_") + key;
+      return (catalogDemoMode ? "artvint_demo_clean_" : "artvint_clean_") + key;
     }
 
     function safeLoadStorage(key, fallback) {
@@ -879,10 +903,9 @@
       return result;
     }
 
-    function useServerUser(user, demo = false) {
-      resetServerChat();
-      if (serverDemoMode !== demo) {
-        serverDemoMode = demo;
+    function selectCatalogScope(demo) {
+      if (catalogDemoMode !== demo) {
+        catalogDemoMode = demo;
         artworks = safeLoadStorage("artvint_v6_items", initialArtworks);
         artistProfiles = safeLoadStorage("artvint_v6_artists", initialArtistProfiles);
         orders = safeLoadStorage("artvint_v6_orders", initialOrders);
@@ -892,6 +915,12 @@
         deletedAccounts = safeLoadStorage("artvint_deleted_accounts", []);
         blockedEmails = safeLoadStorage("artvint_blocked_emails", []);
       }
+    }
+
+    function useServerUser(user, demo = false) {
+      resetServerChat();
+      serverDemoMode = Boolean(user && demo);
+      selectCatalogScope(user ? serverDemoMode : catalogDemoMode);
       currentUser = user;
       if (user && deletedAccounts.includes(user.handle)) {
         detachAccountHistory(user.handle);
@@ -1120,10 +1149,28 @@
     }
 
     function verificationLabel(item) {
-      if (isCertified(item)) return "Zatwierdzono";
+      if (isCertified(item)) return "Zweryfikowane";
       if (item.verification?.analysis?.passed) return "Oczekuje na decyzję";
       if (item.verification?.analysis) return "Analiza niezaliczona";
       return "Niezweryfikowane";
+    }
+
+    function verificationBadgeHTML(item, analysisResult = false) {
+      let state = "pending";
+      let icon = "fa-clock";
+      let label = verificationLabel(item);
+      if (isCertified(item)) {
+        state = "verified";
+        icon = "fa-check";
+      } else if (item.verification?.analysis?.passed && analysisResult) {
+        state = "verified";
+        icon = "fa-check";
+        label = "Analiza zaliczona";
+      } else if (item.verification?.analysis && !item.verification.analysis.passed) {
+        state = "rejected";
+        icon = "fa-triangle-exclamation";
+      }
+      return `<span class="verification-badge verification-${state}"><i class="fa-solid ${icon}" aria-hidden="true"></i><span>${label}</span></span>`;
     }
 
     async function analyzeArtwork(id) {
@@ -1144,10 +1191,15 @@
       if (!isAdmin() || currentUser.handle !== adminHandle || !artworks.includes(item) || item.image !== source || isCertified(item)) return;
       const width = image.naturalWidth;
       const height = image.naturalHeight;
-      const passed = decoded && width >= 100 && height >= 100 && !item.placeholderImage;
+      const passed = decoded && width >= 100 && height >= 100;
       item.verification = { analysis: { passed, width, height, analyzedAt: new Date().toISOString() } };
       saveState();
-      showToast(passed ? `Analiza techniczna zaliczona (${width} × ${height} px).` : "Analiza niezaliczona. Wymagane jest zdjęcie dzieła o wymiarach co najmniej 100 × 100 px.", passed ? "success" : "error");
+      const message = passed
+        ? `Analiza zaliczona. Zdjęcie spełnia wymagania jakościowe (${width} × ${height} px).`
+        : decoded
+          ? `Analiza niezaliczona. Zdjęcie ma ${width} × ${height} px. Wymagane jest co najmniej 100 × 100 px.`
+          : "Analiza niezaliczona. Nie udało się odczytać zdjęcia. Sprawdź plik lub jego adres.";
+      showToast(message, passed ? "success" : "error");
     }
 
     function approveArtwork(id) {
@@ -1162,6 +1214,7 @@
 
     function saveState() {
       try {
+        localStorage.setItem("artvint_catalog_scope", catalogDemoMode ? "demo" : "regular");
         localStorage.setItem(storageKey("artvint_v6_items"), JSON.stringify(artworks));
         localStorage.setItem(storageKey("artvint_v6_artists"), JSON.stringify(artistProfiles));
         localStorage.setItem(storageKey("artvint_v6_user"), JSON.stringify(currentUser));
@@ -1185,26 +1238,22 @@
     }
 
     function resetDemoData() {
-      localStorage.removeItem(storageKey("artvint_v6_items"));
-      localStorage.removeItem(storageKey("artvint_v6_artists"));
-      localStorage.removeItem(storageKey("artvint_v6_user"));
-      localStorage.removeItem(storageKey("artvint_v6_orders"));
-      localStorage.removeItem(storageKey("artvint_v6_chats"));
-      localStorage.removeItem(storageKey("artvint_v6_reviews"));
-      artworks = JSON.parse(JSON.stringify(initialArtworks));
-      artistProfiles = JSON.parse(JSON.stringify(initialArtistProfiles));
-      currentUser = null;
-      accounts = {};
-      deletedAccounts = [];
-      blockedEmails = [];
-      orders = JSON.parse(JSON.stringify(initialOrders));
-      chats = JSON.parse(JSON.stringify(initialChats));
-      reviews = JSON.parse(JSON.stringify(initialReviews));
-      restoreLocalAccount();
+      if (!catalogDemoMode) return showToast("Przykładowe dane są dostępne tylko w trybie demonstracyjnym.", "info");
+      try {
+        ArtVintDemo.seed(localStorage, { force: true });
+        artworks = safeLoadStorage("artvint_v6_items", []);
+        artistProfiles = safeLoadStorage("artvint_v6_artists", {});
+        orders = safeLoadStorage("artvint_v6_orders", []);
+        reviews = safeLoadStorage("artvint_v6_reviews", []);
+      } catch {
+        return showToast("Nie udało się przywrócić przykładów. Sprawdź miejsce w pamięci przeglądarki.", "error");
+      }
+      activeItemId = null;
       document.getElementById("error-watchdog-banner").classList.add("hidden");
+      resetFilters();
       switchTab("all");
       saveState();
-      showToast("Przywrócono domyślne dane demonstracyjne i oczyszczono pamięć!");
+      showToast("Przywrócono przykładowe prace, portfolio, zakupy i opinie. Zwykłe konta zachowały swoje dane.");
     }
 
     function showToast(msg, type = "success") {
@@ -1261,6 +1310,8 @@
     }
 
     function renderUserNav() {
+      document.getElementById("demo-data-notice").classList.toggle("hidden", !catalogDemoMode);
+      document.getElementById("reset-demo-data-btn").classList.toggle("hidden", !catalogDemoMode);
       renderWorkspaceNav();
       document.getElementById("export-data-btn").hidden = !isAdmin();
       const area = document.getElementById("user-nav-area");
@@ -1458,6 +1509,7 @@
       if (["@admin", "@marta_asp", "@glina_w_ogniu", demoBuyer].includes(handle)) {
         return showToast("Ten nick jest zarezerwowany. Wybierz inny.", "error");
       }
+      selectCatalogScope(false);
       const existing = accounts[handle];
       const address = email || existing?.email || "";
       if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -1898,26 +1950,27 @@
             <div class="flex flex-wrap items-center gap-2">
               <span class="bg-teal-50 text-teal-800 border border-teal-200 text-xs font-semibold px-3 py-0.5 rounded-full">${item.category}</span>
               ${item.unique ? `<span class="bg-amber-50 text-amber-800 border border-amber-200 text-xs font-semibold px-3 py-0.5 rounded-full"><i class="fa-regular fa-gem mr-1"></i>Unikat 1/1</span>` : ''}
-              <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold px-3 py-0.5 rounded-full"><i class="fa-solid fa-shield-check mr-1"></i>${verificationLabel(item)}</span>
+              ${verificationBadgeHTML(item)}
             </div>
 
             <div>
               <h2 class="text-2xl font-heading font-bold text-stone-900">${escapeHTML(item.title)}</h2>
               <!-- Wizytówka autora z przejściem do Portfolio -->
-              <div onclick="closeModal('detail-modal'); openArtistPortfolio('${item.author}');" class="mt-2.5 p-2.5 rounded-2xl bg-stone-50 hover:bg-teal-50/60 border border-stone-200/90 flex items-center justify-between cursor-pointer transition group">
-                <div class="flex items-center gap-2.5">
-                  <img src="${prof.avatar}" alt="${escapeHTML(prof.name)}" class="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm">
-                  <div>
-                    <div class="text-xs font-bold text-stone-900 group-hover:text-teal-800 flex items-center gap-1">
-                      <span>${escapeHTML(prof.name)} (${item.author})</span>
-                      <i class="fa-solid fa-circle-check text-teal-600 text-[10px]"></i>
+              <div class="detail-author mt-2.5 p-2.5 rounded-2xl bg-stone-50 border border-stone-200/90">
+                <div class="detail-author-identity">
+                  <img src="${prof.avatar}" alt="${escapeHTML(prof.name)}" class="w-10 h-10 shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm">
+                  <div class="detail-author-data">
+                    <div class="detail-author-name text-xs font-bold text-stone-900">
+                      <span>${escapeHTML(prof.name)}</span>
+                      ${isCertified(item) ? '<i class="fa-solid fa-circle-check text-teal-600 text-[10px] shrink-0" title="Zweryfikowana praca"></i>' : ''}
                     </div>
-                    <div class="text-[11px] text-stone-500">${escapeHTML(prof.city)} • <span class="text-amber-600 font-bold"><i class="fa-solid fa-star"></i> ${ratingInfo.avg}</span> (${ratingInfo.count} opinii po zakupie)</div>
+                    <div class="detail-author-handle text-[11px] text-stone-500" title="${escapeHTML(item.author)}">${escapeHTML(item.author)}</div>
+                    <div class="text-[11px] text-stone-500">${prof.city?.trim() ? escapeHTML(prof.city) + ' • ' : ''}<span class="text-amber-600 font-bold"><i class="fa-solid fa-star"></i> ${ratingInfo.avg}</span> (${ratingInfo.count} opinii po zakupie)</div>
                   </div>
                 </div>
-                <span class="text-[11px] font-bold text-teal-700 bg-white px-2.5 py-1 rounded-xl border border-teal-200 shadow-sm group-hover:bg-teal-700 group-hover:text-white transition">
-                  Zobacz Portfolio <i class="fa-solid fa-arrow-right ml-1"></i>
-                </span>
+                <button type="button" onclick="closeModal('detail-modal'); openArtistPortfolio('${item.author}');" class="detail-portfolio-button text-[11px] font-bold text-teal-700 bg-white px-2.5 py-1 rounded-xl border border-teal-200 shadow-sm hover:bg-teal-700 hover:text-white transition">
+                  <span>Zobacz Portfolio</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </button>
               </div>
             </div>
 
@@ -1936,7 +1989,7 @@
               <div class="grid grid-cols-2 gap-2 pt-3 border-t border-stone-100 mt-3">
                 <div><span class="text-stone-400 block">Technika:</span><strong>${escapeHTML(item.technique)}</strong></div>
                 <div><span class="text-stone-400 block">Wymiary:</span><strong>${escapeHTML(item.dimensions)}</strong></div>
-                <div><span class="text-stone-400 block">Oprawa:</span><strong>${item.framed ? 'Gotowe do zawieszenia' : 'Bez oprawy'}</strong></div>
+                <div><span class="text-stone-400 block">Wykończenie:</span><strong>${item.framed ? 'Gotowe do ekspozycji' : 'Bez oprawy'}</strong></div>
                 <div><span class="text-stone-400 block">Certyfikat:</span><strong>${isCertified(item) ? "PDF po zakupie" : "Brak zatwierdzenia"}</strong></div>
               </div>
             </div>
@@ -2122,7 +2175,7 @@
       document.getElementById("art-desc").value = item.description || "";
       document.getElementById("opt-negotiable").checked = !!item.negotiable;
       document.getElementById("opt-custom").checked = !!item.custom;
-      document.getElementById("opt-framed").checked = !!item.framed;
+      document.getElementById("opt-framed").value = item.framed ? "framed" : "unframed";
       document.getElementById("opt-unique").checked = !!item.unique;
       artworkUploadReady = true;
       openModal("add-modal");
@@ -2173,7 +2226,7 @@
       const description = document.getElementById("art-desc").value.trim();
       const negotiable = document.getElementById("opt-negotiable").checked;
       const custom = document.getElementById("opt-custom").checked;
-      const framed = document.getElementById("opt-framed").checked;
+      const framed = document.getElementById("opt-framed").value === "framed";
       const unique = document.getElementById("opt-unique").checked;
 
       if (!title || !technique || !dimensions || !Number.isSafeInteger(price) || price < 1) {
@@ -2842,15 +2895,13 @@
       return `
         <div class="bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between card-zoom">
           <div>
-            <div class="px-4 py-2.5 flex justify-between items-center text-xs border-b border-stone-100">
-              <button onclick="openArtistPortfolio('${item.author}')" class="font-bold text-stone-800 hover:text-teal-700 flex items-center gap-2 group" title="Otwórz Portfolio Autora ${escapeHTML(prof.name)}">
-                <img src="${prof.avatar}" alt="${item.author}" class="w-5 h-5 rounded-full object-cover ring-1 ring-stone-300">
-                <span class="group-hover:underline">${item.author}</span>
-                <span class="text-[10px] text-amber-600 font-semibold"><i class="fa-solid fa-star"></i> ${ratingInfo.avg}</span>
+            <div class="artwork-card-header px-4 py-2.5 text-xs border-b border-stone-100">
+              <button onclick="openArtistPortfolio('${item.author}')" class="artwork-card-author font-bold text-stone-800 hover:text-teal-700 group" title="Otwórz Portfolio Autora ${escapeHTML(prof.name)} (${escapeHTML(item.author)})">
+                <img src="${prof.avatar}" alt="${escapeHTML(item.author)}" class="w-5 h-5 shrink-0 rounded-full object-cover ring-1 ring-stone-300">
+                <span class="artwork-card-handle group-hover:underline">${escapeHTML(item.author)}</span>
+                <span class="artwork-card-rating text-[10px] text-amber-600 font-semibold"><i class="fa-solid fa-star" aria-hidden="true"></i> ${ratingInfo.avg}</span>
               </button>
-              <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-semibold">
-                <i class="fa-solid fa-check mr-0.5"></i>${verificationLabel(item)}
-              </span>
+              ${verificationBadgeHTML(item)}
             </div>
 
             <div onclick="openDetailModal(${item.id})" class="relative h-56 bg-stone-100 overflow-hidden cursor-pointer">
@@ -2980,9 +3031,9 @@
                       <div class="h-32 bg-stone-200 relative">
                         ${prof.cover ? `<img src="${escapeHTML(prof.cover)}" class="w-full h-full object-cover" alt="">` : ""}
                         <div class="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent"></div>
-                        <span class="absolute top-3 right-3 bg-white/95 text-stone-800 text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
+                        ${prof.city?.trim() ? `<span class="studio-location absolute top-3 right-3 bg-white/95 text-stone-800 text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
                           <i class="fa-solid fa-location-dot text-teal-700 mr-1"></i>${escapeHTML(prof.city)}
-                        </span>
+                        </span>` : ''}
                         <img src="${prof.avatar}" class="w-16 h-16 rounded-2xl object-cover ring-4 ring-white shadow-md absolute -bottom-6 left-5 bg-white" alt="${escapeHTML(prof.name)}">
                       </div>
 
@@ -2993,15 +3044,15 @@
                               <span>${escapeHTML(prof.name)}</span>
                               ${artworks.some(item => item.author === handle && isCertified(item)) ? '<i class="fa-solid fa-circle-check text-teal-600" title="Zweryfikowana pracownia"></i>' : ""}
                             </h3>
-                            <div class="text-xs font-semibold text-teal-700">${escapeHTML(prof.studioName)} (${handle})</div>
+                            <div class="text-xs font-semibold text-stone-500 break-words">${prof.studioName?.trim() ? escapeHTML(prof.studioName) + ' ' : ''}${escapeHTML(handle)}</div>
                           </div>
                           <span class="bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-lg text-xs font-bold">
                             <i class="fa-solid fa-star text-amber-500 mr-0.5"></i>${rating.avg}
                           </span>
                         </div>
 
-                        <div class="text-[11px] font-semibold text-stone-700 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200/80">
-                          ${escapeHTML(prof.specialization)}
+                        <div class="studio-specialization text-[11px] font-semibold ${prof.specialization?.trim() ? 'text-stone-700' : 'text-stone-500'} bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200/80">
+                          ${escapeHTML(prof.specialization?.trim() || 'Brak określonej specjalizacji')}
                         </div>
 
                         <p class="text-xs text-stone-600 line-clamp-3 leading-relaxed">${escapeHTML(prof.bio)}</p>
@@ -3018,9 +3069,11 @@
                         <button onclick="openArtistPortfolio('${handle}')" class="flex-1 bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold py-2.5 rounded-xl transition shadow-sm">
                           Otwórz Portfolio Autora
                         </button>
-                        <button onclick="openCustomOrderModal('${handle}')" class="bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold px-3 py-2.5 rounded-xl border border-stone-300" title="Zamów pracę Custom">
+                        ${currentUser?.handle === handle ? `<span class="own-profile-badge inline-flex items-center gap-1.5 whitespace-nowrap bg-teal-50 text-teal-800 border border-teal-200 text-xs font-bold px-3 py-2.5 rounded-xl">
+                          <i class="fa-solid fa-user" aria-hidden="true"></i>Twój profil
+                        </span>` : `<button onclick="openCustomOrderModal('${handle}')" class="bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold px-3 py-2.5 rounded-xl border border-stone-300" title="Zamów pracę Custom">
                           <i class="fa-solid fa-wand-magic-sparkles text-teal-700"></i>
-                        </button>
+                        </button>`}
                       </div>
                     </div>
                   </div>
@@ -3281,12 +3334,12 @@
               <button onclick="switchTab('all')" class="text-xs font-semibold text-teal-700 hover:underline"><i class="fa-solid fa-arrow-left mr-1"></i>Wróć do katalogu</button>
             </div>
             ${myOrders.length === 0 ? `<p class="text-xs text-stone-500">Brak zamówień w historii.</p>` : `
-              <div class="divide-y divide-stone-200 text-xs">
+              <div class="orders-list text-xs">
                 ${myOrders.map(o => `
-                  <div class="py-4 flex flex-wrap justify-between items-center gap-3">
-                    <div class="flex items-center gap-3">
-                      <img src="${o.image || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=200&q=80'}" class="w-14 h-14 rounded-xl object-cover border border-stone-200">
-                      <div>
+                  <article class="order-card">
+                    <div class="order-main">
+                      <img src="${o.image || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=200&q=80'}" alt="${escapeHTML(o.title)}" class="w-14 h-14 shrink-0 rounded-xl object-cover border border-stone-200">
+                      <div class="min-w-0 break-words">
                         <span class="font-mono text-[11px] bg-stone-100 px-2 py-0.5 rounded font-bold">${o.id}</span>
                         <span class="font-bold text-sm text-stone-900 ml-1.5">${escapeHTML(o.title)}</span>
                         <div class="text-stone-500 mt-1">
@@ -3295,7 +3348,11 @@
                         </div>
                       </div>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2.5">
+                    <div class="order-summary">
+                      <div class="font-extrabold text-sm text-teal-800">${o.total} zł</div>
+                      <span class="order-status inline-block bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[10px] font-semibold mt-0.5">${escapeHTML(o.status)}</span>
+                    </div>
+                    <div class="order-actions">
                       ${!o.reviewed && (o.buyer === currentUser.handle && !o.buyerAccountDeleted) ? `
                         <button onclick="openArtistPortfolio('${o.seller}', 'reviews')" class="bg-teal-50 hover:bg-teal-100 text-teal-800 px-3.5 py-2 rounded-xl font-bold border border-teal-200 shadow-sm transition flex items-center gap-1.5">
                           <i class="fa-regular fa-star text-teal-700"></i> Oceń po zakupie
@@ -3307,13 +3364,9 @@
                       `}
                       ${isCertified(o) ? `<button onclick="openCertificateModal('${o.id}')" class="bg-amber-50 hover:bg-amber-100 text-amber-900 px-3.5 py-2 rounded-xl font-bold border border-amber-300 shadow-sm transition flex items-center gap-1.5">
                         <i class="fa-solid fa-award text-amber-600"></i> Certyfikat PDF
-                      </button>` : '<span class="text-stone-500">Brak certyfikatu</span>'}
-                      <div class="text-right ml-1">
-                        <div class="font-extrabold text-sm text-teal-800">${o.total} zł</div>
-                        <span class="inline-block bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[10px] font-semibold mt-0.5">${escapeHTML(o.status)}</span>
-                      </div>
+                      </button>` : '<span class="order-no-certificate bg-stone-100 text-stone-500 px-3 py-2 rounded-xl font-semibold border border-stone-200 text-[11px]" aria-disabled="true"><i class="fa-solid fa-award" aria-hidden="true"></i>Brak certyfikatu</span>'}
                     </div>
-                  </div>
+                  </article>
                 `).join("")}
               </div>
             `}
@@ -3425,12 +3478,14 @@
               </ul>` : ""}
               <ul class="divide-y divide-stone-200 mt-2">
                 ${Object.values(accounts).map(account => `
-                  <li class="flex flex-wrap items-center justify-between gap-2 py-2 text-sm">
-                    <span><strong>${escapeHTML(account.name)}</strong> <span class="text-stone-600">${escapeHTML(account.handle)} · ${escapeHTML(account.role)}${account.email ? " · " + escapeHTML(account.email) : ""}</span></span>
-                    ${account.handle === currentUser.handle ? '<span class="text-xs text-stone-500">Bieżące konto</span>' : `
-                      ${account.email && !blockedEmails.includes(account.email) ? `<button type="button" data-block-email="${escapeHTML(account.email)}" onclick="setEmailBlocked(this.dataset.blockEmail, true)" class="rounded-lg bg-stone-100 px-3 py-1.5 text-xs font-semibold">Zablokuj e-mail</button>` : ""}
-                      <button type="button" data-delete-account="${escapeHTML(account.handle)}" onclick="deleteAccount(this.dataset.deleteAccount)" class="rounded-lg bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-800 hover:bg-rose-100">Usuń konto</button>
-                    `}
+                  <li class="admin-account-row py-2 text-sm">
+                    <span class="admin-account-info"><strong>${escapeHTML(account.name)}</strong> <span class="text-stone-600">${escapeHTML(account.handle)} · ${escapeHTML(account.role)}${account.email ? " · " + escapeHTML(account.email) : ""}</span></span>
+                    <div class="admin-account-actions">
+                      ${account.handle === currentUser.handle ? '<span class="text-xs text-stone-500">Bieżące konto</span>' : `
+                        ${account.email && !blockedEmails.includes(account.email) ? `<button type="button" data-block-email="${escapeHTML(account.email)}" onclick="setEmailBlocked(this.dataset.blockEmail, true)" class="rounded-lg bg-stone-100 px-3 py-1.5 text-xs font-semibold">Zablokuj e-mail</button>` : ""}
+                        <button type="button" data-delete-account="${escapeHTML(account.handle)}" onclick="deleteAccount(this.dataset.deleteAccount)" class="rounded-lg bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-800 hover:bg-rose-100">Usuń konto</button>
+                      `}
+                    </div>
                   </li>
                 `).join("")}
               </ul>
@@ -3446,7 +3501,7 @@
                     </div>
                   </div>
                   <div class="flex flex-wrap items-center gap-2">
-                    <span class="font-semibold">${verificationLabel(a)}</span>
+                    ${verificationBadgeHTML(a, true)}
                     ${a.verification?.analysis?.width ? `<span>${a.verification.analysis.width} × ${a.verification.analysis.height} px</span>` : ""}
                     ${!isCertified(a) ? `<button onclick="analyzeArtwork(${a.id})" class="bg-teal-50 text-teal-900 border border-teal-200 px-3 py-1.5 rounded-xl">Analizuj zdjęcie</button>` : ""}
                     ${a.verification?.analysis?.passed && !isCertified(a) ? `<button onclick="approveArtwork(${a.id})" class="bg-teal-700 text-white px-3 py-1.5 rounded-xl">Zatwierdź</button>` : ""}
@@ -3491,6 +3546,7 @@
         if (saleType === "buynow" && item.negotiable) return false;
 
         if (feature === "framed" && !item.framed) return false;
+        if (feature === "unframed" && item.framed) return false;
         if (feature === "unique" && !item.unique) return false;
 
         if (query) {

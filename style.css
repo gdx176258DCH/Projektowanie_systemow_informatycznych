@@ -49,3 +49,109 @@ button:disabled { opacity: .55; cursor: not-allowed; }
   #user-dropdown-menu { right: auto; left: 0; max-width: 82vw; }
   #chat-threads-list { max-height: 8rem; overflow: auto; }
 }
+
+/* Keep author details and status controls readable at every card width. */
+.artwork-card-header,
+.artwork-card-author,
+.artwork-card-rating,
+.verification-badge {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+.artwork-card-header { gap: .5rem; }
+.artwork-card-author { flex: 1; min-width: 0; text-align: left; }
+.artwork-card-handle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.artwork-card-rating,
+.verification-badge { flex-shrink: 0; white-space: nowrap; }
+.verification-badge {
+  display: inline-flex;
+  border: 1px solid;
+  border-radius: 9999px;
+  padding: .2rem .45rem;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.verification-badge i { flex-shrink: 0; }
+.verification-verified { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+.verification-pending { background: #f5f5f4; border-color: #d6d3d1; color: #57534e; }
+.verification-rejected { background: #fff1f2; border-color: #fecdd3; color: #9f1239; }
+
+.detail-author {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+.detail-author-identity { display: flex; align-items: center; gap: .625rem; flex: 1 1 11rem; min-width: 0; }
+.detail-author-data { min-width: 0; overflow-wrap: anywhere; }
+.detail-author-name { display: flex; align-items: center; gap: .375rem; }
+.detail-author-name > span { min-width: 0; }
+.detail-author-handle { display: block; color: #78716c; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.detail-portfolio-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .375rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+  min-height: 2rem;
+}
+.detail-portfolio-button i { flex-shrink: 0; }
+.studio-specialization { min-height: 2rem; display: flex; align-items: center; }
+
+.admin-account-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1rem; }
+.admin-account-info { min-width: 0; overflow-wrap: anywhere; }
+.admin-account-actions { display: grid; grid-template-columns: 8rem 7rem; align-items: center; gap: .5rem; }
+.admin-account-actions > [data-delete-account] { grid-column: 2; }
+.admin-account-actions > span { grid-column: 1 / -1; text-align: right; }
+.admin-account-actions button { white-space: nowrap; }
+
+.orders-list { display: grid; gap: 1rem; padding-top: 1rem; border-top: 1px solid #e7e5e4; }
+.order-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e7e5e4;
+  border-radius: 1rem;
+  background: #fafaf9;
+}
+.order-main { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+.order-summary { text-align: right; justify-self: end; }
+.order-status { max-width: 100%; }
+.order-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: stretch; gap: .625rem; }
+.order-actions > * { display: inline-flex; align-items: center; justify-content: center; gap: .375rem; min-height: 2.25rem; }
+.order-no-certificate { cursor: default; }
+
+@media (max-width: 770px) {
+  #detail-modal { align-items: flex-start; }
+  #detail-modal-content { padding-top: 2.5rem; }
+  #detail-modal .detail-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    background: rgba(12, 10, 9, .72);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .55);
+  }
+  #detail-modal .detail-close:hover { background: rgba(12, 10, 9, .9); }
+}
+@media (max-width: 640px) {
+  .admin-account-row { grid-template-columns: minmax(0, 1fr); gap: .5rem; }
+  .admin-account-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; }
+  .order-card { grid-template-columns: minmax(0, 1fr); }
+  .order-summary { grid-row: 2; }
+}
